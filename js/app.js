@@ -1,52 +1,55 @@
-// Enemies our player must avoid
-var Enemy = function(x, y) {
-    // Variables applied to each of our instances go here,
-    // we've provided one for you to get started
+var Entity = function(x, y, sprite) {
     this.x=x;
     this.y=y;
-    // The image/sprite for our enemies, this uses
-    // a helper we've provided to easily load images
-    this.sprite = 'images/enemy-bug.png';
+    this.sprite=sprite;
 }
+Entity.prototype.update = function(dt) {} // do overload
+
+// Draw the enemy on the screen, required method for game
+Entity.prototype.render = function() {
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+}
+
+
+// ** Enemy ** //
+var Enemy = function(y) {
+    Entity.call(this, 1, y*78, 'images/enemy-bug.png');
+}
+Enemy.prototype = Object.create(Entity.prototype);
+Enemy.prototype.constructor = Enemy;
 
 // Update the enemy's position, required method for game
 // Parameter: dt, a time delta between ticks
 Enemy.prototype.update = function(dt) {
-    // You should multiply any movement by the dt parameter
-    // which will ensure the game runs at the same speed for
-    // all computers.
+    this.x += 10*dt;
+    if (this.x>(505))
+        this.x = 1;
     this.render();
 }
 
-// Draw the enemy on the screen, required method for game
-Enemy.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-}
 
-// Now write your own player class
-// This class requires an update(), render() and
-// a handleInput() method.
+// ** Player ** //
 var Player = function() {
-    Enemy.call(this, 250, 400);
-    this.sprite = 'images/char-boy.png';
+    Entity.call(this, 202, 5*78, 'images/char-boy.png');
 }
-Player.prototype = Object.create(Enemy.prototype);
+Player.prototype = Object.create(Entity.prototype);
 Player.prototype.constructor = Player;
 Player.prototype.handleInput = function(key){
     if(key=='up')
-        this.y--;
+        this.y -= 83;
     else if(key=='down')
-        this.y++;
+        this.y += 83;
     else if(key=='left')
-        this.x--;
+        this.x -= 101;
     else if(key=='right')
-        this.x++;
+        this.x += 101;
+}
+Player.prototype.update = function(dt) {
+    this.render();
 }
 
 // Now instantiate your objects.
-// Place all enemy objects in an array called allEnemies
-// Place the player object in a variable called player
-var allEnemies = [new Enemy(1,4)];
+var allEnemies = [new Enemy( Math.floor((Math.random() * 3) + 1) )];
 var player = new Player();
 
 
